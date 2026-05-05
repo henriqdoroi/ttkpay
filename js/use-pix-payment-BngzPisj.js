@@ -26,6 +26,12 @@ const T = () => {
     };
 };
 
+const formatBRL = (cents) =>
+    (cents / 100).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+
 const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, description: d}) => {
     const f = E();
 
@@ -71,8 +77,6 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                 const response = await fetch(`/api/check-pix-status?transactionId=${t}`);
                 const e = await response.json();
 
-                console.log("[PIX] Poll:", e);
-
                 if (!e || !e.status) return;
 
                 if (e.status === "COMPLETED") {
@@ -83,8 +87,9 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
 
                     console.log("[PIX] Pago!");
 
+                    // ✅ usa valor real do pix
                     q({
-                        value: n / 100,
+                        value: (l?.amount || n) / 100,
                         currency: "BRL"
                     });
 
@@ -92,7 +97,6 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                         title: "Pagamento confirmado! ✅"
                     });
 
-                    // 🚀 REDIRECIONAMENTO GARANTIDO
                     setTimeout(() => {
                         window.location.href = `${s || "/obrigado"}?tx=${t}`;
                     }, 1000);
@@ -104,7 +108,7 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
 
         }, 3000);
 
-    }, [s]);
+    }, [s, l]);
 
     return {
         loading: k,
@@ -122,11 +126,6 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                 const t = p || T();
                 if (!p) R(t);
 
-                $({
-                    value: n / 100,
-                    currency: "BRL"
-                });
-
                 console.log("[PIX] Criando PIX...");
 
                 const response = await fetch("/api/create-pix", {
@@ -143,8 +142,6 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
 
                 const e = await response.json();
 
-                console.log("[PIX] Response:", e);
-
                 if (!e || !e.pixCode) {
                     throw new Error("Erro ao gerar PIX");
                 }
@@ -154,9 +151,8 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                     qr_code_base64: null,
                     transaction_id: String(e.transactionId),
                     expires_at: null,
-                    amount: e.amount // 👈 vem do backend
-                 };
-                console.log("[PIX] Criado:", P.transaction_id);
+                    amount: e.amount // ✅ valor vindo do backend
+                };
 
                 M(P);
                 C(10 * 60);
@@ -204,7 +200,10 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                     });
                 }
             }
-        }
+        },
+
+        // 👇 ADICIONADO PRA USAR NA UI
+        formattedAmount: l?.amount ? formatBRL(l.amount) : null
     };
 };
 
