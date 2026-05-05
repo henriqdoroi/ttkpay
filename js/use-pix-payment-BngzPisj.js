@@ -57,7 +57,7 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
         ? `${String(Math.floor(c / 60)).padStart(2, "0")}:${String(c % 60).padStart(2, "0")}`
         : null;
 
-    // 🔁 POLLING (SEM SUPABASE)
+    // 🔁 POLLING
     const X = r.useCallback((t, i) => {
         o.current && clearInterval(o.current);
         h.current = false;
@@ -92,19 +92,19 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                         title: "Pagamento confirmado! ✅"
                     });
 
-                    f(s, {
-                        state: {
-                            customerData: i,
-                            ...u
-                        }
-                    });
+                    // 🚀 REDIRECIONAMENTO GARANTIDO
+                    setTimeout(() => {
+                        window.location.href = `${s || "/obrigado"}?tx=${t}`;
+                    }, 1000);
                 }
+
             } catch (err) {
                 console.error("[PIX] Poll error:", err);
             }
+
         }, 3000);
 
-    }, [f, s, u]);
+    }, [s]);
 
     return {
         loading: k,
@@ -114,7 +114,7 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
         pixRef: I,
         customer: p,
 
-        // 🚀 CRIAR PIX (DUTTYFY)
+        // 🚀 CRIAR PIX
         handlePay: async () => {
             v(true);
 
