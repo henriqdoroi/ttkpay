@@ -488,9 +488,9 @@ async function verificarPagamento(){
         }
     },3000);
 }
-document.getElementById("pixSheet").addEventListener("click", function(e){
+document.getElementById("pixSheet").addEventListener("click", e => {
   if(e.target.id === "pixSheet"){
-    this.classList.remove("active");
+    e.currentTarget.classList.remove("active");
   }
 });
     
