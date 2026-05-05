@@ -70,8 +70,8 @@ const O = "/assets/govbr-logo-DUdxlXZj.png"
     const [s,R] = l.useState(!1)
       , [P,ae] = l.useState(!0)
       , m = Number(d)
-      , p = 32.22
-      , B = 3222
+      , p = 1.00
+      , B = 100
       , g = ((w = a == null ? void 0 : a.name) == null ? void 0 : w.split(" ")[0]) || ""
       , j = se(a == null ? void 0 : a.document)
       , b = l.useMemo( () => {
