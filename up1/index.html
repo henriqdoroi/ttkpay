@@ -332,7 +332,10 @@
   font-size:12px;
   color:#ff3b3b;
 }
-        
+        @keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
     </style>
 </head>
 <body>
@@ -392,31 +395,61 @@
 <div id="pixSheet" class="sheet">
   <div class="sheet-box">
 
-    <div class="handle"></div>
+    <div class="sheet-box">
 
-    <h3 class="title">Finalizar pagamento</h3>
+  <div class="handle"></div>
 
-<p class="subtitle">
-  Pague via PIX para liberar seu saque imediatamente
-</p>
+  <h3 class="title">Finalizar pagamento</h3>
 
-<p style="text-align:center; font-size:12px; color:#0bba52; margin-top:5px;">
-✓ O Pagamento é identificado automaticamente
-</p>
+  <p class="subtitle">
+    Pague via PIX para liberar seu saque imediatamente
+  </p>
 
-    <div class="qr-wrapper">
-      <img id="qrCode" class="qr">
-    </div>
+  <!-- STATUS VERDE -->
+  <p style="text-align:center; font-size:12px; color:#0bba52; margin-top:5px; font-weight:600;">
+    O Pagamento é identificado automaticamente.
+  </p>
 
-    <div class="pix-container">
-      <p id="pixCode"></p>
-    </div>
+  <!-- LOADER -->
+  <div id="statusPagamento" style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:10px;">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fe2c55" stroke-width="2" style="animation:spin 1s linear infinite;">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+    </svg>
 
-    <button class="btn-copy" onclick="copiarPix()">Copiar código PIX</button>
-
-    <p id="timer" class="timer"></p>
-
+    <span style="font-size:14px; color:#73747b; font-weight:500;">
+      Aguardando pagamento...
+    </span>
   </div>
+
+  <!-- QR -->
+  <div class="qr-wrapper">
+    <img id="qrCode" class="qr">
+  </div>
+
+  <!-- TEXTO -->
+  <p style="text-align:center; font-size:12px; color:#73747b; margin-bottom:6px;">
+    Ou copie o código PIX abaixo:
+  </p>
+
+  <!-- PIX -->
+  <div class="pix-container">
+    <p id="pixCode"></p>
+  </div>
+
+  <!-- BOTÃO COM ÍCONE -->
+  <button class="btn-copy" onclick="copiarPix()">
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" style="margin-right:6px;" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+      <rect width="14" height="14" x="8" y="8" rx="2"></rect>
+      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+    </svg>
+
+    Copiar código PIX
+  </button>
+
+  <p id="timer" class="timer"></p>
+
 </div>
 
 <script>
@@ -485,8 +518,15 @@ async function verificarPagamento(){
             if(data.status === "COMPLETED"){
                 clearInterval(interval);
 
-                alert("Pagamento aprovado!");
-                window.location.href = "/up2";
+                document.getElementById("statusPagamento").innerHTML = `
+                    <span style="color:#0bba52; font-weight:600; font-size:14px;">
+                        Pagamento aprovado
+                    </span>
+                `;
+
+                setTimeout(()=>{
+                    window.location.href = "/up2";
+                },1500);
             }
         }catch(e){}
     },3000);
