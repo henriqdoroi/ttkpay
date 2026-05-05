@@ -153,9 +153,9 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                     qr_code: e.pixCode,
                     qr_code_base64: null,
                     transaction_id: String(e.transactionId),
-                    expires_at: null
-                };
-
+                    expires_at: null,
+                    amount: e.amount // 👈 vem do backend
+                 };
                 console.log("[PIX] Criado:", P.transaction_id);
 
                 M(P);
