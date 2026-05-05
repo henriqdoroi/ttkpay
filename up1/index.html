@@ -395,8 +395,6 @@
 <div id="pixSheet" class="sheet">
   <div class="sheet-box">
 
-    <div class="sheet-box">
-
   <div class="handle"></div>
 
   <h3 class="title">Finalizar pagamento</h3>
@@ -410,6 +408,11 @@
     O Pagamento é identificado automaticamente.
   </p>
 
+  <!-- QR -->
+  <div class="qr-wrapper">
+    <img id="qrCode" class="qr">
+  </div>
+
   <!-- LOADER -->
   <div id="statusPagamento" style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:10px;">
     
@@ -420,13 +423,8 @@
     <span style="font-size:14px; color:#73747b; font-weight:500;">
       Aguardando pagamento...
     </span>
-  </div>
-
-  <!-- QR -->
-  <div class="qr-wrapper">
-    <img id="qrCode" class="qr">
-  </div>
-
+  </div>      
+        
   <!-- TEXTO -->
   <p style="text-align:center; font-size:12px; color:#73747b; margin-bottom:6px;">
     Ou copie o código PIX abaixo:
