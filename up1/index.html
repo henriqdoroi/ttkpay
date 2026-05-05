@@ -310,7 +310,7 @@ let tempo = 600;
 
 async function gerarPix(){
     try{
-        const res = await fetch("/up1/api/criar-pix", { method:"POST" });
+        const res = await fetch("/up1/api/criar-pix.js", { method:"POST" });
         const data = await res.json();
 
         if(!data.pixCode){
