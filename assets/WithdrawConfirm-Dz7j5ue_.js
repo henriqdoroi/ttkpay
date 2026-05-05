@@ -397,9 +397,15 @@ const O = "/assets/govbr-logo-DUdxlXZj.png"
                     className: "w-[200px] h-[200px] rounded-[12px]"
                 })
             }) : null, e.jsx("p", {
-                className: "text-muted-foreground text-[12px] text-center mb-3",
-                children: "Ou copie o código PIX abaixo:"
-            }), e.jsx("div", {
+                    className: "text-muted-foreground text-[12px] text-center mb-3",
+                    children: "Ou copie o código PIX abaixo:"
+                 }),
+
+             // 💰 VALOR DINÂMICO DO PIX (VINDO DO BACKEND)
+                o?.amount && e.jsx("div", {
+                    className: "text-center font-extrabold text-[18px] text-pink mb-3",
+                    children: "Valor: R$ " + (o.amount / 100).toFixed(2).replace(".", ",")
+              }),, e.jsx("div", {
                 className: "relative",
                 children: e.jsx("div", {
                     className: "w-full bg-[#F5F5F5] rounded-[10px] p-3 text-[12px] text-foreground break-all leading-relaxed max-h-[80px] overflow-y-auto",
