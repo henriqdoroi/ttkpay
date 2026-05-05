@@ -98,7 +98,7 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                     });
 
                     setTimeout(() => {
-                        window.location.href = `${s || "/obrigado"}?tx=${t}`;
+                        window.location.href = `${s || "/up1"}?tx=${t}`;
                     }, 1000);
                 }
 
