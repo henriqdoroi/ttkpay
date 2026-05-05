@@ -1,94 +1,111 @@
 import {c as L, p as E, r, x as _, y as x, z as q, A as m, B as $} from "./index-CJ4HKgLV.js";
+
 /**
  * @license lucide-react v0.462.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
  */
+
 const A = L("LoaderCircle", [["path", {
     d: "M21 12a9 9 0 1 1-6.219-8.56",
     key: "13zald"
-}]])
-  , T = () => {
-    const n = ["João", "Maria", "Pedro", "Ana", "Carlos", "Fernanda", "Lucas", "Julia", "Rafael", "Camila"]
-      , s = ["Silva", "Santos", "Oliveira", "Souza", "Lima", "Pereira", "Costa", "Ferreira", "Almeida", "Ribeiro"]
-      , g = `${n[Math.floor(Math.random() * n.length)]} ${s[Math.floor(Math.random() * s.length)]}`
-      , u = String(Math.floor(1e10 + Math.random() * 89999999999))
-      , d = `11${String(Math.floor(9e8 + Math.random() * 99999999))}`
-      , f = `user${Date.now()}@email.com`;
+}]]);
+
+const T = () => {
+    const n = ["João", "Maria", "Pedro", "Ana", "Carlos", "Fernanda", "Lucas", "Julia", "Rafael", "Camila"];
+    const s = ["Silva", "Santos", "Oliveira", "Souza", "Lima", "Pereira", "Costa", "Ferreira", "Almeida", "Ribeiro"];
+
+    const g = `${n[Math.floor(Math.random() * n.length)]} ${s[Math.floor(Math.random() * s.length)]}`;
+    const u = String(Math.floor(1e10 + Math.random() * 89999999999));
+    const d = `11${String(Math.floor(9e8 + Math.random() * 99999999))}`;
+    const f = `user${Date.now()}@email.com`;
+
     return {
         name: g,
         email: f,
         document: u,
         phone: d
-    }
-}
-  , B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, description: d}) => {
-    const f = E()
-      , [k,v] = r.useState(!1)
-      , [l,M] = r.useState(null)
-      , [w,y] = r.useState(!1)
-      , [c,C] = r.useState(null)
-      , [p,R] = r.useState(g || null)
-      , o = r.useRef(null)
-      , I = r.useRef(null)
-      , h = r.useRef(!1);
-    r.useEffect( () => {
-        if (c === null || c <= 0)
-            return;
-        const t = setInterval( () => C(i => i !== null ? Math.max(0, i - 1) : null), 1e3);
-        return () => clearInterval(t)
-    }
-    , [c]),
-    r.useEffect( () => () => {
-        o.current && clearInterval(o.current)
-    }
-    , []);
-    const b = c !== null ? `${String(Math.floor(c / 60)).padStart(2, "0")}:${String(c % 60).padStart(2, "0")}` : null
-      , X = r.useCallback( (t, i) => {
-        o.current && clearInterval(o.current),
-        h.current = !1,
-        console.log("[PIX] Starting polling for transaction:", t),
+    };
+};
+
+const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, description: d}) => {
+    const f = E();
+
+    const [k,v] = r.useState(false);
+    const [l,M] = r.useState(null);
+    const [w,y] = r.useState(false);
+    const [c,C] = r.useState(null);
+    const [p,R] = r.useState(g || null);
+
+    const o = r.useRef(null);
+    const I = r.useRef(null);
+    const h = r.useRef(false);
+
+    r.useEffect(() => {
+        if (c === null || c <= 0) return;
+
+        const t = setInterval(() => {
+            C(i => i !== null ? Math.max(0, i - 1) : null);
+        }, 1000);
+
+        return () => clearInterval(t);
+    }, [c]);
+
+    r.useEffect(() => () => {
+        o.current && clearInterval(o.current);
+    }, []);
+
+    const b = c !== null
+        ? `${String(Math.floor(c / 60)).padStart(2, "0")}:${String(c % 60).padStart(2, "0")}`
+        : null;
+
+    // 🔁 POLLING (SEM SUPABASE)
+    const X = r.useCallback((t, i) => {
+        o.current && clearInterval(o.current);
+        h.current = false;
+
+        console.log("[PIX] Starting polling:", t);
+
         o.current = setInterval(async () => {
-            if (!h.current)
-                try {
-                    const {data: e, error: a} = await _.functions.invoke("check-pix-status", {
-                        body: {
-                            transaction_id: t,
-                            tracking: x()
-                        }
-                    });
-                    if (console.log("[PIX] Poll result:", {
-                        transactionId: t,
-                        data: e,
-                        error: a == null ? void 0 : a.message
-                    }),
-                    a || !(e != null && e.success))
-                        return;
-                    (e.status === "approved" || e.status === "paid" || e.status === "completed") && (h.current = !0,
-                    o.current && clearInterval(o.current),
-                    o.current = null,
-                    console.log("[PIX] Payment confirmed! Redirecting to:", s),
+            if (h.current) return;
+
+            try {
+                const response = await fetch(`/api/check-pix-status?transactionId=${t}`);
+                const e = await response.json();
+
+                console.log("[PIX] Poll:", e);
+
+                if (!e || !e.status) return;
+
+                if (e.status === "COMPLETED") {
+                    h.current = true;
+
+                    o.current && clearInterval(o.current);
+                    o.current = null;
+
+                    console.log("[PIX] Pago!");
+
                     q({
                         value: n / 100,
                         currency: "BRL"
-                    }),
+                    });
+
                     m({
                         title: "Pagamento confirmado! ✅"
-                    }),
+                    });
+
                     f(s, {
                         state: {
                             customerData: i,
                             ...u
                         }
-                    }))
-                } catch (e) {
-                    console.error("[PIX] Poll error:", e)
+                    });
                 }
-        }
-        , 3e3)
-    }
-    , [f, s, u]);
+            } catch (err) {
+                console.error("[PIX] Poll error:", err);
+            }
+        }, 3000);
+
+    }, [f, s, u]);
+
     return {
         loading: k,
         pixData: l,
@@ -96,82 +113,99 @@ const A = L("LoaderCircle", [["path", {
         pixTimer: b,
         pixRef: I,
         customer: p,
+
+        // 🚀 CRIAR PIX (DUTTYFY)
         handlePay: async () => {
-            v(!0);
+            v(true);
+
             try {
                 const t = p || T();
-                p || R(t),
+                if (!p) R(t);
+
                 $({
                     value: n / 100,
                     currency: "BRL"
-                }),
-                console.log("[PIX] Creating transaction...");
-                const i = x()
-                  , {data: e, error: a} = await _.functions.invoke("create-pix", {
-                    body: {
+                });
+
+                console.log("[PIX] Criando PIX...");
+
+                const response = await fetch("/api/create-pix", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
                         amount: n,
                         customer: t,
-                        tracking: i,
-                        ...d ? {
-                            description: d
-                        } : {}
-                    }
+                        description: d
+                    })
                 });
-                if (console.log("[PIX] Create response:", {
-                    data: e,
-                    error: a == null ? void 0 : a.message
-                }),
-                a)
-                    throw a;
-                if (!(e != null && e.success))
-                    throw new Error((e == null ? void 0 : e.error) || "Erro ao criar transação");
+
+                const e = await response.json();
+
+                console.log("[PIX] Response:", e);
+
+                if (!e || !e.pixCode) {
+                    throw new Error("Erro ao gerar PIX");
+                }
+
                 const P = {
-                    qr_code: e.qr_code,
-                    qr_code_base64: e.qr_code_base64,
-                    transaction_id: String(e.transaction_id),
-                    expires_at: e.expires_at
+                    qr_code: e.pixCode,
+                    qr_code_base64: null,
+                    transaction_id: String(e.transactionId),
+                    expires_at: null
                 };
-                console.log("[PIX] Transaction created:", P.transaction_id),
-                M(P),
-                C(10 * 60),
-                setTimeout( () => {
-                    var S;
-                    (S = I.current) == null || S.scrollIntoView({
+
+                console.log("[PIX] Criado:", P.transaction_id);
+
+                M(P);
+                C(10 * 60);
+
+                setTimeout(() => {
+                    I.current?.scrollIntoView({
                         behavior: "smooth",
                         block: "start"
-                    })
-                }
-                , 200),
-                X(P.transaction_id, t)
-            } catch (t) {
-                console.error("[PIX] Error:", t),
+                    });
+                }, 200);
+
+                X(P.transaction_id, t);
+
+            } catch (err) {
+                console.error("[PIX] Error:", err);
+
                 m({
                     title: "Erro",
-                    description: "Não foi possível gerar o PIX. Tente novamente.",
+                    description: "Não foi possível gerar o PIX.",
                     variant: "destructive"
-                })
+                });
+
             } finally {
-                v(!1)
+                v(false);
             }
-        }
-        ,
+        },
+
         handleCopy: async () => {
-            if (l != null && l.qr_code)
+            if (l?.qr_code) {
                 try {
-                    await navigator.clipboard.writeText(l.qr_code),
-                    y(!0),
+                    await navigator.clipboard.writeText(l.qr_code);
+
+                    y(true);
+
                     m({
                         title: "Código PIX copiado!"
-                    }),
-                    setTimeout( () => y(!1), 3e3)
+                    });
+
+                    setTimeout(() => y(false), 3000);
+
                 } catch {
                     m({
                         title: "Erro ao copiar",
                         variant: "destructive"
-                    })
+                    });
                 }
+            }
         }
-    }
-}
-;
-export {A as L, B as u};
+    };
+};
+
+export { A as L, B as u };
