@@ -79,7 +79,8 @@ const B = ({ amountInCents: n, redirectTo: s, customerData: g, extraState: u, de
 
                 if (!data?.status) return;
 
-                if (data.status === "COMPLETED") {
+                // Adicionado "paid" e "approved" para cobrir outros status comuns de gateways
+                if (data.status === "COMPLETED" || data.status === "paid" || data.status === "approved") {
                     paidRef.current = true;
                     clearInterval(pollRef.current);
 
@@ -118,11 +119,11 @@ const B = ({ amountInCents: n, redirectTo: s, customerData: g, extraState: u, de
                 const t = customer || T();
                 if (!customer) setCustomer(t);
 
-                const amountFinal = Number(n);
+                const amountFinal = Number(n || 0);
 
-if (!Number.isFinite(amountFinal) || amountFinal <= 0) {
-    throw new Error("Valor inválido para PIX");
-}
+                if (!amountFinal || isNaN(amountFinal)) {
+                    throw new Error("Valor inválido");
+                }
 
                 const response = await fetch("/api/create-pix", {
                     method: "POST",
@@ -131,6 +132,8 @@ if (!Number.isFinite(amountFinal) || amountFinal <= 0) {
                     },
                     body: JSON.stringify({
                         amount: amountFinal,
+                        value: amountFinal, // Fallback para garantir que a API receba o valor
+                        transaction_amount: amountFinal / 100, // Fallback para gateways como Mercado Pago
                         customer: t,
                         description: d || "Pagamento via PIX"
                     })
@@ -139,11 +142,11 @@ if (!Number.isFinite(amountFinal) || amountFinal <= 0) {
                 const e = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(e?.error || "Erro ao gerar PIX");
+                    throw new Error(e?.error || e?.message || "Erro ao gerar PIX");
                 }
 
                 if (!e?.pixCode && !e?.qr_code) {
-                    throw new Error("PIX inválido");
+                    throw new Error("PIX inválido retornado pelo servidor");
                 }
 
                 const P = {
