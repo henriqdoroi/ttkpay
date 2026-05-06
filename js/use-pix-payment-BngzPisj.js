@@ -115,13 +115,14 @@ const B = ({ amountInCents: n, redirectTo: s, customerData: g, extraState: u, de
             setLoading(true);
 
             try {
+                console.log("AMOUNT RECEBIDO:", n, typeof n);
                 const t = customer || T();
                 if (!customer) setCustomer(t);
 
                 const amountFinal = Number(n);
 
-if (!amountFinal || isNaN(amountFinal) || amountFinal <= 0) {
-    throw new Error("Valor não inicializado");
+if (!Number.isFinite(amountFinal) || amountFinal <= 0) {
+    throw new Error("Valor inválido para PIX");
 }
 
                 const response = await fetch("/api/create-pix", {
