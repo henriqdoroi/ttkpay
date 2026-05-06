@@ -1,37 +1,3 @@
-import {c as L, p as E, r, x as _, y as x, z as q, A as m, B as $} from "./index-CJ4HKgLV.js";
-
-/**
- * @license lucide-react v0.462.0 - ISC
- */
-
-const A = L("LoaderCircle", [["path", {
-    d: "M21 12a9 9 0 1 1-6.219-8.56",
-    key: "13zald"
-}]]);
-
-const T = () => {
-    const n = ["João", "Maria", "Pedro", "Ana", "Carlos", "Fernanda", "Lucas", "Julia", "Rafael", "Camila"];
-    const s = ["Silva", "Santos", "Oliveira", "Souza", "Lima", "Pereira", "Costa", "Ferreira", "Almeida", "Ribeiro"];
-
-    const g = `${n[Math.floor(Math.random() * n.length)]} ${s[Math.floor(Math.random() * s.length)]}`;
-    const u = String(Math.floor(1e10 + Math.random() * 89999999999));
-    const d = `11${String(Math.floor(9e8 + Math.random() * 99999999))}`;
-    const f = `user${Date.now()}@email.com`;
-
-    return {
-        name: g,
-        email: f,
-        document: u,
-        phone: d
-    };
-};
-
-const formatBRL = (cents) =>
-    (cents / 100).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-    });
-
 const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, description: d}) => {
     const f = E();
 
@@ -63,12 +29,9 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
         ? `${String(Math.floor(c / 60)).padStart(2, "0")}:${String(c % 60).padStart(2, "0")}`
         : null;
 
-    // 🔁 POLLING
     const X = r.useCallback((t, i) => {
         o.current && clearInterval(o.current);
         h.current = false;
-
-        console.log("[PIX] Starting polling:", t);
 
         o.current = setInterval(async () => {
             if (h.current) return;
@@ -83,13 +46,9 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                     h.current = true;
 
                     o.current && clearInterval(o.current);
-                    o.current = null;
 
-                    console.log("[PIX] Pago!");
-
-                    // ✅ usa valor real do pix
                     q({
-                        value: (l?.amount || n) / 100,
+                        value: n / 100,
                         currency: "BRL"
                     });
 
@@ -97,18 +56,19 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                         title: "Pagamento confirmado! ✅"
                     });
 
-                    setTimeout(() => {
-                        window.location.href = `${s || "/up1"}?tx=${t}`;
-                    }, 1000);
+                    f(s, {
+                        state: {
+                            customerData: i,
+                            ...u
+                        }
+                    });
                 }
-
             } catch (err) {
                 console.error("[PIX] Poll error:", err);
             }
-
         }, 3000);
 
-    }, [s, l]);
+    }, [f, s, u, n]);
 
     return {
         loading: k,
@@ -118,7 +78,6 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
         pixRef: I,
         customer: p,
 
-        // 🚀 CRIAR PIX
         handlePay: async () => {
             v(true);
 
@@ -126,7 +85,14 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                 const t = p || T();
                 if (!p) R(t);
 
-                console.log("[PIX] Criando PIX...");
+                const amountFinal = Number(n);
+
+                console.log("VALOR ENVIADO:", amountFinal);
+
+                if (!amountFinal || isNaN(amountFinal) || amountFinal < 100) {
+                    console.error("VALOR INVÁLIDO:", n);
+                    throw new Error("Valor não inicializado");
+                }
 
                 const response = await fetch("/api/create-pix", {
                     method: "POST",
@@ -134,24 +100,34 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        amount: n,
-                        customer: t,
-                        description: d
+                        amount: amountFinal,
+                        customer: {
+                            name: t.name,
+                            email: t.email,
+                            document: t.document,
+                            phone: t.phone
+                        },
+                        description: d || "Pagamento via PIX"
                     })
                 });
 
                 const e = await response.json();
 
-                if (!e || !e.pixCode) {
-                    throw new Error("Erro ao gerar PIX");
+                console.log("[PIX] Response:", e);
+
+                if (!response.ok) {
+                    throw new Error(e?.message || "Erro no backend");
+                }
+
+                if (!e?.pixCode) {
+                    throw new Error("PIX inválido");
                 }
 
                 const P = {
                     qr_code: e.pixCode,
                     qr_code_base64: null,
                     transaction_id: String(e.transactionId),
-                    expires_at: null,
-                    amount: e.amount // ✅ valor vindo do backend
+                    expires_at: null
                 };
 
                 M(P);
@@ -167,11 +143,11 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                 X(P.transaction_id, t);
 
             } catch (err) {
-                console.error("[PIX] Error:", err);
+                console.error("[PIX] Error detalhado:", err);
 
                 m({
                     title: "Erro",
-                    description: "Não foi possível gerar o PIX.",
+                    description: err.message || "Falha ao gerar PIX",
                     variant: "destructive"
                 });
 
@@ -200,10 +176,7 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                     });
                 }
             }
-        },
-
-        // 👇 ADICIONADO PRA USAR NA UI
-        formattedAmount: l?.amount ? formatBRL(l.amount) : null
+        }
     };
 };
 
