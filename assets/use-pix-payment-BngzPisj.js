@@ -1,6 +1,29 @@
-const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, description: d}) => {
-    const f = E();
+import r from "react";
 
+// Spinner de carregamento em SVG para evitar erro de referência na exportação
+const A = (props) => r.createElement("svg", {
+    width: props.size || 24,
+    height: props.size || 24,
+    className: props.className,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+}, [
+    r.createElement("line", { x1: "12", y1: "2", x2: "12", y2: "6", key: "1" }),
+    r.createElement("line", { x1: "12", y1: "18", x2: "12", y2: "22", key: "2" }),
+    r.createElement("line", { x1: "4.93", y1: "4.93", x2: "7.76", y2: "7.76", key: "3" }),
+    r.createElement("line", { x1: "16.24", y1: "16.24", x2: "19.07", y2: "19.07", key: "4" }),
+    r.createElement("line", { x1: "2", y1: "12", x2: "6", y2: "12", key: "5" }),
+    r.createElement("line", { x1: "18", y1: "12", x2: "22", y2: "12", key: "6" }),
+    r.createElement("line", { x1: "4.93", y1: "19.07", x2: "7.76", y2: "16.24", key: "7" }),
+    r.createElement("line", { x1: "16.24", y1: "4.93", x2: "19.07", y2: "7.76", key: "8" })
+]);
+
+const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, description: d}) => {
+    const f = E(); // Certifique-se de que E() está definido no seu ambiente
     const [k,v] = r.useState(false);
     const [l,M] = r.useState(null);
     const [w,y] = r.useState(false);
@@ -13,11 +36,9 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
 
     r.useEffect(() => {
         if (c === null || c <= 0) return;
-
         const t = setInterval(() => {
             C(i => i !== null ? Math.max(0, i - 1) : null);
         }, 1000);
-
         return () => clearInterval(t);
     }, [c]);
 
@@ -35,27 +56,15 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
 
         o.current = setInterval(async () => {
             if (h.current) return;
-
             try {
                 const response = await fetch(`/api/check-pix-status?transactionId=${t}`);
                 const e = await response.json();
-
                 if (!e || !e.status) return;
-
                 if (e.status === "COMPLETED") {
                     h.current = true;
-
                     o.current && clearInterval(o.current);
-
-                    q({
-                        value: n / 100,
-                        currency: "BRL"
-                    });
-
-                    m({
-                        title: "Pagamento confirmado! ✅"
-                    });
-
+                    q({ value: n / 100, currency: "BRL" });
+                    m({ title: "Pagamento confirmado! ✅" });
                     f(s, {
                         state: {
                             customerData: i,
@@ -67,7 +76,6 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                 console.error("[PIX] Poll error:", err);
             }
         }, 3000);
-
     }, [f, s, u, n]);
 
     return {
@@ -80,25 +88,18 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
 
         handlePay: async () => {
             v(true);
-
             try {
                 const t = p || T();
                 if (!p) R(t);
 
                 const amountFinal = Number(n);
-
-                console.log("VALOR ENVIADO:", amountFinal);
-
                 if (!amountFinal || isNaN(amountFinal) || amountFinal < 100) {
-                    console.error("VALOR INVÁLIDO:", n);
                     throw new Error("Valor não inicializado");
                 }
 
                 const response = await fetch("/api/create-pix", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         amount: amountFinal,
                         customer: {
@@ -112,45 +113,31 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
                 });
 
                 const e = await response.json();
-
-                console.log("[PIX] Response:", e);
-
-                if (!response.ok) {
-                    throw new Error(e?.message || "Erro no backend");
-                }
-
-                if (!e?.pixCode) {
-                    throw new Error("PIX inválido");
-                }
+                if (!response.ok) throw new Error(e?.message || "Erro no backend");
+                if (!e?.pixCode) throw new Error("PIX inválido");
 
                 const P = {
                     qr_code: e.pixCode,
-                    qr_code_base64: null,
+                    qr_code_base64: e.qr_code_base64 || null,
                     transaction_id: String(e.transactionId),
-                    expires_at: null
+                    expires_at: null,
+                    amount: e.amount || amountFinal // 💰 Correção: injetando o amount para o UI
                 };
 
                 M(P);
                 C(10 * 60);
 
                 setTimeout(() => {
-                    I.current?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
+                    I.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }, 200);
 
                 X(P.transaction_id, t);
-
             } catch (err) {
-                console.error("[PIX] Error detalhado:", err);
-
                 m({
                     title: "Erro",
                     description: err.message || "Falha ao gerar PIX",
                     variant: "destructive"
                 });
-
             } finally {
                 v(false);
             }
@@ -160,20 +147,11 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
             if (l?.qr_code) {
                 try {
                     await navigator.clipboard.writeText(l.qr_code);
-
                     y(true);
-
-                    m({
-                        title: "Código PIX copiado!"
-                    });
-
+                    m({ title: "Código PIX copiado!" });
                     setTimeout(() => y(false), 3000);
-
                 } catch {
-                    m({
-                        title: "Erro ao copiar",
-                        variant: "destructive"
-                    });
+                    m({ title: "Erro ao copiar", variant: "destructive" });
                 }
             }
         }
