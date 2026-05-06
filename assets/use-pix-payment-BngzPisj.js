@@ -120,8 +120,8 @@ const B = ({ amountInCents: n, redirectTo: s, customerData: g, extraState: u, de
 
                 const amountFinal = Number(n);
 
-if (!amountFinal || isNaN(amountFinal) || amountFinal <= 0) {
-    throw new Error("Valor não inicializado");
+if (!Number.isFinite(amountFinal) || amountFinal <= 0) {
+    throw new Error("Valor inválido para PIX");
 }
 
                 const response = await fetch("/api/create-pix", {
