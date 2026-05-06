@@ -67,13 +67,14 @@ const O = "/assets/govbr-logo-DUdxlXZj.png"
         () => window.removeEventListener("popstate", t)
     }
     , []);
-    const [s,R] = l.useState(!1)
-      , [P,ae] = l.useState(!0)
-      , m = Number(d)
-      , p = 1.00
-      , B = 100
-      , g = ((w = a == null ? void 0 : a.name) == null ? void 0 : w.split(" ")[0]) || ""
-      , j = se(a == null ? void 0 : a.document)
+    const [s,R] = l.useState(!1),
+  [P,ae] = l.useState(!0),
+  [pixAmount, setPixAmount] = l.useState(null),
+  m = Number(d),
+  p = pixAmount ? pixAmount / 100 : 32.22,
+  B = pixAmount || 3222,
+  g = ((w = a == null ? void 0 : a.name) == null ? void 0 : w.split(" ")[0]) || "",
+  j = se(a == null ? void 0 : a.document)
       , b = l.useMemo( () => {
         const t = Math.random().toString(36).substring(2, 8).toUpperCase();
         return `TT-${new Date().getFullYear()}-${t}`
@@ -95,6 +96,11 @@ const O = "/assets/govbr-logo-DUdxlXZj.png"
         return () => clearTimeout(t)
     }
     , []);
+l.useEffect(() => {
+    if (o?.amount) {
+        setPixAmount(o.amount);
+    }
+}, [o]);
     const n = t => `R$ ${t.toLocaleString("pt-BR", {
         minimumFractionDigits: 2
     })}`
@@ -405,7 +411,7 @@ const O = "/assets/govbr-logo-DUdxlXZj.png"
                 o?.amount && e.jsx("div", {
                     className: "text-center font-extrabold text-[18px] text-pink mb-3",
                     children: "Valor: R$ " + (o.amount / 100).toFixed(2).replace(".", ",")
-              }),, e.jsx("div", {
+              }), e.jsx("div", {
                 className: "relative",
                 children: e.jsx("div", {
                     className: "w-full bg-[#F5F5F5] rounded-[10px] p-3 text-[12px] text-foreground break-all leading-relaxed max-h-[80px] overflow-y-auto",
