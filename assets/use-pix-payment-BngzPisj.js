@@ -118,11 +118,11 @@ const B = ({ amountInCents: n, redirectTo: s, customerData: g, extraState: u, de
                 const t = customer || T();
                 if (!customer) setCustomer(t);
 
-                const amountFinal = Number(n || 0);
+                const amountFinal = Number(n);
 
-                if (!amountFinal || isNaN(amountFinal) || amountFinal < 100) {
-                    throw new Error("Valor inválido");
-                }
+if (!amountFinal || isNaN(amountFinal) || amountFinal <= 0) {
+    throw new Error("Valor não inicializado");
+}
 
                 const response = await fetch("/api/create-pix", {
                     method: "POST",
