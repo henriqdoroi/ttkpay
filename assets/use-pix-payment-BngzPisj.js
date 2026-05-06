@@ -116,96 +116,83 @@ const B = ({amountInCents: n, redirectTo: s, customerData: g, extraState: u, des
 
         // 🚀 CRIAR PIX (DUTTYFY)
         handlePay: async () => {
-            v(true);
+    v(true);
 
-            try {
-                const t = p || T();
-                if (!p) R(t);
+    try {
+        const t = p || T();
+        if (!p) R(t);
 
-                $({
-                    value: n / 100,
-                    currency: "BRL"
-                });
+        const amountFinal = Number(n);
 
-                console.log("[PIX] Criando PIX...");
-
-                const response = await fetch("/api/create-pix", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        amount: n,
-                        customer: t,
-                        description: d
-                    })
-                });
-
-                const e = await response.json();
-
-                console.log("[PIX] Response:", e);
-
-                if (!e || !e.pixCode) {
-                    throw new Error("Erro ao gerar PIX");
-                }
-
-                const P = {
-                    qr_code: e.pixCode,
-                    qr_code_base64: null,
-                    transaction_id: String(e.transactionId),
-                    expires_at: null
-                };
-
-                console.log("[PIX] Criado:", P.transaction_id);
-
-                M(P);
-                C(10 * 60);
-
-                setTimeout(() => {
-                    I.current?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
-                }, 200);
-
-                X(P.transaction_id, t);
-
-            } catch (err) {
-                console.error("[PIX] Error:", err);
-
-                m({
-                    title: "Erro",
-                    description: "Não foi possível gerar o PIX.",
-                    variant: "destructive"
-                });
-
-            } finally {
-                v(false);
-            }
-        },
-
-        handleCopy: async () => {
-            if (l?.qr_code) {
-                try {
-                    await navigator.clipboard.writeText(l.qr_code);
-
-                    y(true);
-
-                    m({
-                        title: "Código PIX copiado!"
-                    });
-
-                    setTimeout(() => y(false), 3000);
-
-                } catch {
-                    m({
-                        title: "Erro ao copiar",
-                        variant: "destructive"
-                    });
-                }
-            }
+        if (!amountFinal || amountFinal < 100) {
+            throw new Error("Valor inválido");
         }
-    };
-};
+
+        console.log("[PIX] Enviando:", {
+            amount: amountFinal,
+            customer: t
+        });
+
+        const response = await fetch("/api/create-pix", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                amount: amountFinal,
+                customer: {
+                    name: t.name,
+                    email: t.email,
+                    document: t.document,
+                    phone: t.phone
+                },
+                description: d || "Pagamento via PIX"
+            })
+        });
+
+        const e = await response.json();
+
+        console.log("[PIX] Response:", e);
+
+        if (!response.ok) {
+            throw new Error(e?.message || "Erro no backend");
+        }
+
+        if (!e?.pixCode) {
+            throw new Error("PIX inválido");
+        }
+
+        const P = {
+            qr_code: e.pixCode,
+            qr_code_base64: null,
+            transaction_id: String(e.transactionId),
+            expires_at: null
+        };
+
+        M(P);
+        C(10 * 60);
+
+        setTimeout(() => {
+            I.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }, 200);
+
+        X(P.transaction_id, t);
+
+    } catch (err) {
+        console.error("[PIX] Error detalhado:", err);
+
+        m({
+            title: "Erro",
+            description: err.message || "Falha ao gerar PIX",
+            variant: "destructive"
+        });
+
+    } finally {
+        v(false);
+    }
+}
 
 export { A as L, B as u };
