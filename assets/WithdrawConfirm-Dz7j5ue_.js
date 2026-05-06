@@ -60,9 +60,8 @@ const xe = () => {
     const [P,ae] = l.useState(!0);
 
     // Valores estáticos garantidos que corrigem o erro da API
-    const m = Number(d);
-    const p = 32.22;
-    const B = 3222; 
+    const m = Number(d ?? 0);
+    const B = Number(d ?? 0);
 
     const g = ((w = a == null ? void 0 : a.name) == null ? void 0 : w.split(" ")[0]) || "";
     const j = se(a == null ? void 0 : a.document);
