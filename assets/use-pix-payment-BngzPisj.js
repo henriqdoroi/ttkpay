@@ -115,6 +115,7 @@ const B = ({ amountInCents: n, redirectTo: s, customerData: g, extraState: u, de
             setLoading(true);
 
             try {
+                console.log("AMOUNT RECEBIDO:", n, typeof n);
                 const t = customer || T();
                 if (!customer) setCustomer(t);
 
