@@ -39,10 +39,12 @@ const se = i => {
 const xe = () => {
     var w;
     const i = T(), r = $(), u = useTimer(10);
-    const {amount: d, pixKeyType: c, pixKey: x, customerData: a} = r.state || {
-        amount: "10",
-        pixKeyType: "email",
-        pixKey: ""
+   const state = r.state;
+
+const d = state?.amount ?? "10";
+const c = state?.pixKeyType ?? "email";
+const x = state?.pixKey ?? "";
+const a = state?.customerData ?? null;
     };
     const E = { amount: d, pixKeyType: c, pixKey: x, customerData: a };
     const h = () => {
