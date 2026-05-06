@@ -39,10 +39,12 @@ const se = i => {
 const xe = () => {
     var w;
     const i = T(), r = $(), u = useTimer(10);
-    const {amount: d, pixKeyType: c, pixKey: x, customerData: a} = r.state || {
-        amount: "10",
-        pixKeyType: "email",
-        pixKey: ""
+   const state = r.state;
+
+const d = state?.amount ?? "10";
+const c = state?.pixKeyType ?? "email";
+const x = state?.pixKey ?? "";
+const a = state?.customerData ?? null;
     };
     const E = { amount: d, pixKeyType: c, pixKey: x, customerData: a };
     const h = () => {
@@ -60,8 +62,9 @@ const xe = () => {
     const [P,ae] = l.useState(!0);
 
     // Valores estáticos garantidos que corrigem o erro da API
-    const m = Number(d ?? 0);
-    const B = Number(d ?? 0);
+    const m = Number(d);
+    const p = 32.22;
+    const B = 3222; 
 
     const g = ((w = a == null ? void 0 : a.name) == null ? void 0 : w.split(" ")[0]) || "";
     const j = se(a == null ? void 0 : a.document);
